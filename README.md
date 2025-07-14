@@ -203,4 +203,4 @@ Desenvolvedor Back-end apaixonado por tecnologia, focado em construir APIs robus
 
 📍 **Localização**: Cordeirópolis - SP  
 🔗 **GitHub**: [@Caio-Dias02](https://github.com/Caio-Dias02)  
-💼 **LinkedIn**: [Caio Dias](https://linkedin.com/in/caio-dias) 
+💼 **LinkedIn**: [Caio Dias](https://www.linkedin.com/in/caio-dias-755494204/) 
