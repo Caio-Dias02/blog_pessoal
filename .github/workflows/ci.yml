@@ -1,0 +1,97 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: back_end/package-lock.json
+    
+    - name: Install backend dependencies
+      run: |
+        cd back_end
+        npm ci
+    
+    - name: Run backend linting
+      run: |
+        cd back_end
+        npm run lint
+    
+    - name: Build backend
+      run: |
+        cd back_end
+        npm run build
+    
+    - name: Run backend tests
+      run: |
+        cd back_end
+        npm run test
+
+  frontend-tests:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: front_end/package-lock.json
+    
+    - name: Install frontend dependencies
+      run: |
+        cd front_end
+        npm ci
+    
+    - name: Build frontend
+      run: |
+        cd front_end
+        npm run build
+    
+    - name: Run frontend tests
+      run: |
+        cd front_end
+        npm run test --if-present
+
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: [backend-tests, frontend-tests]
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    
+    - name: Build Docker images
+      run: |
+        docker-compose build
+    
+    - name: Test Docker containers
+      run: |
+        docker-compose up -d
+        sleep 30
+        docker-compose down 
